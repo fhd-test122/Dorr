@@ -109,8 +109,33 @@ jobs:
           <?xml version="1.0" encoding="utf-8"?>
           <ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:background="#0F172A" android:layoutDirection="rtl" android:padding="16dp">
               <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
-                  <Text
-      - name: Generate Part 2
+                  <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="الموسوعة الحديثية - الدرر السنية" android:textColor="#38BDF8" android:textSize="22sp" android:textStyle="bold" android:layout_marginBottom="12dp" />
+                  <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/bg_glass_card" android:orientation="horizontal" android:padding="8dp" android:layout_marginBottom="16dp">
+                      <EditText android:id="@+id/et_search" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:hint="ابحث عن حديث في الدرر السنية..." android:textColorHint="#94A3B8" android:textColor="#FFFFFF" android:background="@android:color/transparent" android:padding="8dp" />
+                      <Button android:id="@+id/btn_search" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="بحث" />
+                  </LinearLayout>
+                  <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/bg_glass_widget" android:orientation="vertical" android:padding="16dp" android:layout_marginBottom="16dp">
+                      <TextView android:id="@+id/tv_main_matn" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#FFFFFF" android:textSize="18sp" android:textStyle="bold" android:lineSpacingExtra="6dp" android:layout_marginBottom="12dp" />
+                      <TextView android:id="@+id/tv_main_meta" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#38BDF8" android:textSize="13sp" android:layout_marginBottom="12dp" />
+                      <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="📖 شرح الحديث ومعاني الكلمات:" android:textColor="#FACC15" android:textSize="15sp" android:textStyle="bold" android:layout_marginBottom="6dp" />
+                      <TextView android:id="@+id/tv_main_sharh" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#E2E8F0" android:textSize="15sp" android:lineSpacingExtra="6dp" />
+                      <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="16dp">
+                          <Button android:id="@+id/btn_new_hadith" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="حديث جديد 🔄" android:layout_marginEnd="8dp" />
+                          <Button android:id="@+id/btn_add_fav" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="حفظ في المفضلة ⭐" />
+                      </LinearLayout>
+                  </LinearLayout>
+                  <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/bg_glass_card" android:orientation="vertical" android:padding="16dp" android:layout_marginBottom="16dp">
+                      <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="⏱️ مؤقت تغيير الحديث تلقائياً:" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" android:layout_marginBottom="8dp" />
+                      <Spinner android:id="@+id/spinner_interval" android:layout_width="match_parent" android:layout_height="48dp" android:background="#CBD5E1" />
+                  </LinearLayout>
+                  <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/bg_glass_card" android:orientation="vertical" android:padding="16dp">
+                      <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="⭐ الأحاديث المحفوظة في المفضلة:" android:textColor="#FACC15" android:textSize="16sp" android:textStyle="bold" android:layout_marginBottom="8dp" />
+                      <TextView android:id="@+id/tv_favorites_list" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#CBD5E1" android:textSize="14sp" />
+                  </LinearLayout>
+              </LinearLayout>
+          </ScrollView>
+          EOF
+                - name: Generate Part 2
         run: |
           cat << 'EOF' > app/src/main/java/com/dorar/hadithwidget/HadithRepository.kt
           package com.dorar.hadithwidget
