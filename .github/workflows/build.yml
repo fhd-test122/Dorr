@@ -1,430 +1,333 @@
-name: Auto Generate and Build Dorar APK
+name: Build Dorar APK
 
 on:
   push:
-    branches: [ "main", "master" ]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Generate Complete Android Project Files
+      - name: Generate Part 1
         run: |
-          mkdir -p app/src/main/java/com/dorar/hadithwidget
-          mkdir -p app/src/main/res/layout
-          mkdir -p app/src/main/res/drawable
-          mkdir -p app/src/main/res/xml
-          mkdir -p app/src/main/res/values
-          mkdir -p app/src/main/res/font
-
+          mkdir -p app/src/main/java/com/dorar/hadithwidget app/src/main/res/{layout,drawable,xml,values}
           cat << 'EOF' > settings.gradle.kts
-          pluginManagement {
-              repositories {
-                  google()
-                  mavenCentral()
-                  gradlePluginPortal()
-              }
-          }
-          dependencyResolutionManagement {
-              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-              repositories {
-                  google()
-                  mavenCentral()
-              }
-          }
+          pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+          dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
           rootProject.name = "DorarHadithApp"
           include(":app")
           EOF
-
           cat << 'EOF' > build.gradle.kts
           plugins {
               id("com.android.application") version "8.2.2" apply false
               id("org.jetbrains.kotlin.android") version "1.9.22" apply false
           }
           EOF
-
           cat << 'EOF' > gradle.properties
           org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
           android.useAndroidX=true
-          kotlin.code.style=official
           android.nonTransitiveRClass=true
           EOF
-
           cat << 'EOF' > app/build.gradle.kts
-          plugins {
-              id("com.android.application")
-              id("org.jetbrains.kotlin.android")
-          }
-
+          plugins { id("com.android.application"); id("org.jetbrains.kotlin.android") }
           android {
               namespace = "com.dorar.hadithwidget"
               compileSdk = 34
-
-              defaultConfig {
-                  applicationId = "com.dorar.hadithwidget"
-                  minSdk = 26
-                  targetSdk = 34
-                  versionCode = 1
-                  versionName = "1.0"
-              }
-
-              buildTypes {
-                  release {
-                      isMinifyEnabled = false
-                  }
-              }
-              compileOptions {
-                  sourceCompatibility = JavaVersion.VERSION_17
-                  targetCompatibility = JavaVersion.VERSION_17
-              }
-              kotlinOptions {
-                  jvmTarget = "17"
-              }
+              defaultConfig { applicationId = "com.dorar.hadithwidget"; minSdk = 26; targetSdk = 34; versionCode = 1; versionName = "1.0" }
+              compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
+              kotlinOptions { jvmTarget = "17" }
           }
-
           dependencies {
               implementation("androidx.core:core-ktx:1.12.0")
               implementation("androidx.appcompat:appcompat:1.6.1")
               implementation("com.google.android.material:material:1.11.0")
-              implementation("androidx.constraintlayout:constraintlayout:2.1.4")
               implementation("androidx.work:work-runtime-ktx:2.9.0")
               implementation("org.jsoup:jsoup:1.17.2")
               implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
               implementation("com.google.code.gson:gson:2.10.1")
           }
           EOF
-
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <?xml version="1.0" encoding="utf-8"?>
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-              package="com.dorar.hadithwidget">
-
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
               <uses-permission android:name="android.permission.INTERNET" />
               <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-              <application
-                  android:allowBackup="true"
-                  android:label="أحاديث الدرر السنية"
-                  android:supportsRtl="true"
-                  android:theme="@style/Theme.DorarHadith">
-
-                  <activity
-                      android:name=".MainActivity"
-                      android:exported="true"
-                      android:launchMode="singleTop">
+              <application android:allowBackup="true" android:label="أحاديث الدرر السنية" android:supportsRtl="true" android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+                  <activity android:name=".MainActivity" android:exported="true" android:launchMode="singleTop">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
                           <category android:name="android.intent.category.LAUNCHER" />
                       </intent-filter>
                   </activity>
-
-                  <receiver
-                      android:name=".HadithWidgetProvider"
-                      android:exported="true"
-                      android:label="ويدجت الموسوعة الحديثية">
+                  <receiver android:name=".HadithWidgetProvider" android:exported="true" android:label="ويدجت الموسوعة الحديثية">
                       <intent-filter>
                           <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                           <action android:name="com.dorar.hadithwidget.ACTION_REFRESH" />
                       </intent-filter>
-                      <meta-data
-                          android:name="android.appwidget.provider"
-                          android:resource="@xml/hadith_widget_info" />
+                      <meta-data android:name="android.appwidget.provider" android:resource="@xml/hadith_widget_info" />
                   </receiver>
-
-                  <meta-data
-                      android:name="preloaded_fonts"
-                      android:resource="@array/preloaded_fonts" />
               </application>
           </manifest>
           EOF
-
           cat << 'EOF' > app/src/main/res/drawable/bg_glass_widget.xml
           <?xml version="1.0" encoding="utf-8"?>
-          <shape xmlns:android="http://schemas.android.com/apk/res/android"
-              android:shape="rectangle">
-              <gradient
-                  android:angle="135"
-                  android:startColor="#CC1E293B"
-                  android:centerColor="#B30F172A"
-                  android:endColor="#991E293B"
-                  android:type="linear" />
+          <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+              <gradient android:angle="135" android:startColor="#CC1E293B" android:centerColor="#B30F172A" android:endColor="#991E293B" android:type="linear" />
               <corners android:radius="24dp" />
-              <stroke
-                  android:width="1.5dp"
-                  android:color="#4DFFFFFF" />
+              <stroke android:width="1.5dp" android:color="#4DFFFFFF" />
           </shape>
           EOF
-
           cat << 'EOF' > app/src/main/res/drawable/bg_glass_card.xml
           <?xml version="1.0" encoding="utf-8"?>
-          <shape xmlns:android="http://schemas.android.com/apk/res/android"
-              android:shape="rectangle">
+          <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
               <solid android:color="#26FFFFFF" />
               <corners android:radius="18dp" />
-              <stroke
-                  android:width="1dp"
-                  android:color="#33FFFFFF" />
+              <stroke android:width="1dp" android:color="#33FFFFFF" />
           </shape>
           EOF
-
           cat << 'EOF' > app/src/main/res/xml/hadith_widget_info.xml
           <?xml version="1.0" encoding="utf-8"?>
           <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-              android:minWidth="250dp"
-              android:minHeight="140dp"
-              android:targetCellWidth="4"
-              android:targetCellHeight="2"
-              android:updatePeriodMillis="3600000"
-              android:initialLayout="@layout/widget_hadith"
-              android:resizeMode="horizontal|vertical"
-              android:widgetCategory="home_screen" />
+              android:minWidth="250dp" android:minHeight="140dp" android:updatePeriodMillis="3600000"
+              android:initialLayout="@layout/widget_hadith" android:resizeMode="horizontal|vertical" android:widgetCategory="home_screen" />
           EOF
-
-          cat << 'EOF' > app/src/main/res/values/styles.xml
-          <?xml version="1.0" encoding="utf-8"?>
-          <resources>
-              <style name="Theme.DorarHadith" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-                  <item name="colorPrimary">#0284C7</item>
-                  <item name="colorPrimaryVariant">#0369A1</item>
-                  <item name="colorOnPrimary">#FFFFFF</item>
-                  <item name="android:fontFamily">@font/cairo</item>
-              </style>
-          </resources>
-          EOF
-
-          cat << 'EOF' > app/src/main/res/values/preloaded_fonts.xml
-          <?xml version="1.0" encoding="utf-8"?>
-          <resources>
-              <array name="preloaded_fonts" translatable="false">
-                  <item>@font/cairo</item>
-              </array>
-          </resources>
-          EOF
-
-          cat << 'EOF' > app/src/main/res/font/cairo.xml
-          <?xml version="1.0" encoding="utf-8"?>
-          <font-family xmlns:app="http://schemas.android.com/apk/res-auto"
-              app:fontProviderAuthority="com.google.android.gms.fonts"
-              app:fontProviderPackage="com.google.android.gms"
-              app:fontProviderQuery="Cairo"
-              app:fontProviderCerts="@array/com_google_android_gms_fonts_certs">
-          </font-family>
-          EOF
-
-          cat << 'EOF' > app/src/main/res/values/font_certs.xml
-          <?xml version="1.0" encoding="utf-8"?>
-          <resources>
-              <array name="com_google_android_gms_fonts_certs">
-                  <item>@array/com_google_android_gms_fonts_certs_dev</item>
-                  <item>@array/com_google_android_gms_fonts_certs_prod</item>
-              </array>
-              <string-array name="com_google_android_gms_fonts_certs_dev">
-                  <item>MIIEqDCCA5CgAwIBAgIJANWFuGx90071MA0GCSqGSIb3DQEBBAUAMIGUMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEQMA4GA1UEChMHR29vZ2xlSTERMA8GA1UECxMIQW5kcm9pZDEQMA4GA1UEAxMHR29vZ2xlMSIwIAYJKoZIhvcNAQkBFhNhbmRyb2lkQGdvb2dsZS5jb20wHhcNMDgwNDE1MjMyMDE3WhcNMjcwODMwMjMyMDE3WjCBlDELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxEDAOBgNVBAoTB0dvb2dsZTERMA8GA1UECxMIQW5kcm9pZDEQMA4GA1UEAxMHR29vZ2xlMSIwIAYJKoZIhvcNAQkBFhNhbmRyb2lkQGdvb2dsZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQD04K335G+3sC9fP0vA9c1sM3bA6+W/91M8G/y7N5f5dG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3AgMBAAEwDQYJKoZIhvcNAQEEBQADggEBAFfP</item>
-              </string-array>
-              <string-array name="com_google_android_gms_fonts_certs_prod">
-                  <item>MIIEqDCCA5CgAwIBAgIJANWFuGx90071MA0GCSqGSIb3DQEBBAUAMIGUMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEQMA4GA1UEChMHR29vZ2xlSTERMA8GA1UECxMIQW5kcm9pZDEQMA4GA1UEAxMHR29vZ2xlMSIwIAYJKoZIhvcNAQkBFhNhbmRyb2lkQGdvb2dsZS5jb20wHhcNMDgwNDE1MjMyMDE3WhcNMjcwODMwMjMyMDE3WjCBlDELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxEDAOBgNVBAoTB0dvb2dsZTERMA8GA1UECxMIQW5kcm9pZDEQMA4GA1UEAxMHR29vZ2xlMSIwIAYJKoZIhvcNAQkBFhNhbmRyb2lkQGdvb2dsZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQD04K335G+3sC9fP0vA9c1sM3bA6+W/91M8G/y7N5f5dG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3AgMBAAEwDQYJKoZIhvcNAQEEBQADggEBAFfP</item>
-              </string-array>
-          </resources>
-          EOF
-
           cat << 'EOF' > app/src/main/res/layout/widget_hadith.xml
           <?xml version="1.0" encoding="utf-8"?>
-          <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/widget_root"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@drawable/bg_glass_widget"
-              android:padding="16dp"
-              android:layoutDirection="rtl">
-
-              <LinearLayout
-                  android:id="@+id/widget_header"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:orientation="horizontal"
-                  android:gravity="center_vertical">
-
-                  <TextView
-                      android:id="@+id/tv_widget_badge"
-                      android:layout_width="0dp"
-                      android:layout_height="wrap_content"
-                      android:layout_weight="1"
-                      android:text="الموسوعة الحديثية • حديث صحيح"
-                      android:textColor="#38BDF8"
-                      android:textSize="12sp"
-                      android:fontFamily="@font/cairo"
-                      android:textStyle="bold" />
-
-                  <TextView
-                      android:id="@+id/btn_widget_share"
-                      android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:text="مشاركة 📤"
-                      android:textColor="#E2E8F0"
-                      android:textSize="12sp"
-                      android:fontFamily="@font/cairo"
-                      android:paddingHorizontal="8dp"
-                      android:paddingVertical="4dp" />
-
-                  <TextView
-                      android:id="@+id/btn_widget_refresh"
-                      android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:text="تحديث 🔄"
-                      android:textColor="#38BDF8"
-                      android:textSize="12sp"
-                      android:fontFamily="@font/cairo"
-                      android:paddingHorizontal="8dp"
-                      android:paddingVertical="4dp" />
+          <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/widget_root" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/bg_glass_widget" android:padding="16dp" android:layoutDirection="rtl">
+              <LinearLayout android:id="@+id/widget_header" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                  <TextView android:id="@+id/tv_widget_badge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="الموسوعة الحديثية • حديث صحيح" android:textColor="#38BDF8" android:textSize="12sp" android:textStyle="bold" />
+                  <TextView android:id="@+id/btn_widget_share" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="مشاركة 📤" android:textColor="#E2E8F0" android:textSize="12sp" android:padding="4dp" />
+                  <TextView android:id="@+id/btn_widget_refresh" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="تحديث 🔄" android:textColor="#38BDF8" android:textSize="12sp" android:padding="4dp" />
               </LinearLayout>
-
-              <TextView
-                  android:id="@+id/tv_widget_matn"
-                  android:layout_width="match_parent"
-                  android:layout_height="match_parent"
-                  android:layout_below="@id/widget_header"
-                  android:layout_above="@+id/tv_widget_footer"
-                  android:layout_marginTop="8dp"
-                  android:layout_marginBottom="8dp"
-                  android:gravity="center_vertical"
-                  android:maxLines="5"
-                  android:ellipsize="end"
-                  android:text="قال رسول الله ﷺ: (إنَّما الأعمالُ بالنِّيَّاتِ، وإنَّما لكلِّ امرئٍ ما نوى...)"
-                  android:textColor="#FFFFFF"
-                  android:textSize="15sp"
-                  android:lineSpacingExtra="4dp"
-                  android:fontFamily="@font/cairo" />
-
-              <TextView
-                  android:id="@+id/tv_widget_footer"
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:layout_alignParentBottom="true"
-                  android:text="الراوي: عمر بن الخطاب | المصدر: صحيح البخاري (اضغط للشرح)"
-                  android:textColor="#94A3B8"
-                  android:textSize="11sp"
-                  android:singleLine="true"
-                  android:ellipsize="end"
-                  android:fontFamily="@font/cairo" />
+              <TextView android:id="@+id/tv_widget_matn" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_below="@id/widget_header" android:layout_above="@+id/tv_widget_footer" android:layout_marginVertical="8dp" android:gravity="center_vertical" android:maxLines="5" android:ellipsize="end" android:textColor="#FFFFFF" android:textSize="15sp" android:lineSpacingExtra="4dp" />
+              <TextView android:id="@+id/tv_widget_footer" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_alignParentBottom="true" android:textColor="#94A3B8" android:textSize="11sp" android:singleLine="true" android:ellipsize="end" />
           </RelativeLayout>
           EOF
-
           cat << 'EOF' > app/src/main/res/layout/activity_main.xml
           <?xml version="1.0" encoding="utf-8"?>
-          <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="#0F172A"
-              android:layoutDirection="rtl"
-              android:padding="16dp">
+          <ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:background="#0F172A" android:layoutDirection="rtl" android:padding="16dp">
+              <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                  <Text
+      - name: Generate Part 2
+        run: |
+          cat << 'EOF' > app/src/main/java/com/dorar/hadithwidget/HadithRepository.kt
+          package com.dorar.hadithwidget
+          import android.content.Context
+          import com.google.gson.Gson
+          import com.google.gson.reflect.TypeToken
+          import kotlinx.coroutines.Dispatchers
+          import kotlinx.coroutines.withContext
+          import org.jsoup.Jsoup
 
-              <LinearLayout
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:orientation="vertical">
+          data class HadithItem(val matn: String, val rawi: String, val muhaddith: String, val source: String, val grade: String, val sharh: String)
 
-                  <TextView
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:text="الموسوعة الحديثية - الدرر السنية"
-                      android:textColor="#38BDF8"
-                      android:textSize="22sp"
-                      android:textStyle="bold"
-                      android:fontFamily="@font/cairo"
-                      android:layout_marginBottom="12dp" />
+          object HadithRepository {
+              private const val PREFS = "dorar_prefs"
+              private val gson = Gson()
+              private val fallbackList = listOf(
+                  HadithItem("قال رسول الله ﷺ: «إنَّما الأعمالُ بالنِّيَّاتِ، وإنَّما لكلِّ امرئٍ ما نوى»", "عمر بن الخطاب", "البخاري", "صحيح البخاري", "صحيح", "مدار قبول الأعمال وصحتها وترتب الثواب عليها إنما هو بالنية الصالحة وإخلاص العمل لله وحده."),
+                  HadithItem("قال رسول الله ﷺ: «الكَلِمَةُ الطَّيِّبَةُ صَدَقَةٌ»", "أبو هريرة", "البخاري ومسلم", "صحيح البخاري", "صحيح", "كل كلام طيب يدخل السرور على قلب المؤمن أو يصلح بين الناس أو يذكر بالله فهو بمنزلة الصدقة بالمال في الأجر.")
+              )
 
-                  <LinearLayout
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:background="@drawable/bg_glass_card"
-                      android:orientation="horizontal"
-                      android:padding="8dp"
-                      android:layout_marginBottom="16dp">
+              suspend fun fetchOnlineHadith(context: Context, searchQuery: String? = null): HadithItem = withContext(Dispatchers.IO) {
+                  try {
+                      val q = searchQuery ?: listOf("الصدق", "الرحمة", "الصبر", "الذكر", "الصلاة", "البر", "الخلق", "الجنة").random()
+                      val url = "https://dorar.net/hadith/search?q=${java.net.URLEncoder.encode(q, "UTF-8")}&st=w&xclude=&d%5B%5D=1&d%5B%5D=2"
+                      val doc = Jsoup.connect(url).userAgent("Mozilla/5.0").timeout(10000).get()
+                      val list = mutableListOf<HadithItem>()
+                      for (el in doc.select(".border-bottom")) {
+                          val matn = el.selectFirst(".hadith")?.text()?.trim() ?: continue
+                          if (matn.length in 25..350) {
+                              val info = el.selectFirst(".hadith-info")?.text() ?: ""
+                              val sharhUrl = el.selectFirst("a[href*='/hadith/sharh/']")?.attr("href")
+                              var sharh = "حديث صحيح ثابت في السنة النبوية الشريفة، يحث على معالي الأخلاق والعمل الصالح."
+                              if (!sharhUrl.isNullOrEmpty()) {
+                                  try {
+                                      val sDoc = Jsoup.connect(if (sharhUrl.startsWith("http")) sharhUrl else "https://dorar.net$sharhUrl").timeout(8000).get()
+                                      sDoc.selectFirst(".text-justify")?.text()?.trim()?.let { if (it.isNotEmpty()) sharh = it }
+                                  } catch (_: Exception) {}
+                              }
+                              list.add(HadithItem(matn, extract(info, "الراوي:", "المحدث:"), extract(info, "المحدث:", "المصدر:"), extract(info, "المصدر:", "الصفحة أو الرقم:"), "صحيح", sharh))
+                          }
+                      }
+                      if (list.isNotEmpty()) {
+                          val chosen = list.random()
+                          saveCurrent(context, chosen)
+                          return@withContext chosen
+                      }
+                  } catch (_: Exception) {}
+                  val fb = fallbackList.random()
+                  saveCurrent(context, fb)
+                  return@withContext fb
+              }
 
-                      <EditText
-                          android:id="@+id/et_search"
-                          android:layout_width="0dp"
-                          android:layout_height="wrap_content"
-                          android:layout_weight="1"
-                          android:hint="ابحث عن حديث في الدرر السنية..."
-                          android:textColorHint="#94A3B8"
-                          android:textColor="#FFFFFF"
-                          android:background="@android:color/transparent"
-                          android:fontFamily="@font/cairo"
-                          android:padding="8dp" />
+              private fun extract(t: String, s: String, e: String): String {
+                  val i = t.indexOf(s); if (i == -1) return "غير محدد"
+                  val sub = t.substring(i + s.length); val j = sub.indexOf(e)
+                  return if (j != -1) sub.substring(0, j).trim() else sub.take(25).trim()
+              }
 
-                      <Button
-                          android:id="@+id/btn_search"
-                          android:layout_width="wrap_content"
-                          android:layout_height="wrap_content"
-                          android:text="بحث"
-                          android:fontFamily="@font/cairo" />
-                  </LinearLayout>
+              fun getCurrentHadith(c: Context): HadithItem {
+                  val j = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString("cur", null)
+                  return if (j != null) gson.fromJson(j, HadithItem::class.java) else fallbackList.first()
+              }
 
-                  <LinearLayout
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:background="@drawable/bg_glass_widget"
-                      android:orientation="vertical"
-                      android:padding="16dp"
-                      android:layout_marginBottom="16dp">
+              fun saveCurrent(c: Context, item: HadithItem) {
+                  c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString("cur", gson.toJson(item)).apply()
+              }
 
-                      <TextView
-                          android:id="@+id/tv_main_matn"
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:textColor="#FFFFFF"
-                          android:textSize="18sp"
-                          android:textStyle="bold"
-                          android:fontFamily="@font/cairo"
-                          android:lineSpacingExtra="6dp"
-                          android:layout_marginBottom="12dp" />
+              fun addFavorite(c: Context, item: HadithItem) {
+                  val list = getFavorites(c).toMutableList()
+                  if (list.none { it.matn == item.matn }) {
+                      list.add(0, item)
+                      c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString("fav", gson.toJson(list)).apply()
+                  }
+              }
 
-                      <TextView
-                          android:id="@+id/tv_main_meta"
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:textColor="#38BDF8"
-                          android:textSize="13sp"
-                          android:fontFamily="@font/cairo"
-                          android:layout_marginBottom="12dp" />
+              fun getFavorites(c: Context): List<HadithItem> {
+                  val j = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString("fav", null) ?: return emptyList()
+                  return gson.fromJson(j, object : TypeToken<List<HadithItem>>() {}.type)
+              }
 
-                      <View
-                          android:layout_width="match_parent"
-                          android:layout_height="1dp"
-                          android:background="#33FFFFFF"
-                          android:layout_marginBottom="12dp" />
+              fun setIntervalHours(c: Context, h: Long) = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putLong("int", h).apply()
+              fun getIntervalHours(c: Context): Long = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getLong("int", 6L)
+          }
+          EOF
+          cat << 'EOF' > app/src/main/java/com/dorar/hadithwidget/HadithUpdateWorker.kt
+          package com.dorar.hadithwidget
+          import android.content.Context
+          import androidx.work.*
+          import java.util.concurrent.TimeUnit
 
-                      <TextView
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:text="📖 شرح الحديث ومعاني الكلمات:"
-                          android:textColor="#FACC15"
-                          android:textSize="15sp"
-                          android:textStyle="bold"
-                          android:fontFamily="@font/cairo"
-                          android:layout_marginBottom="6dp" />
+          class HadithUpdateWorker(private val ctx: Context, p: WorkerParameters) : CoroutineWorker(ctx, p) {
+              override suspend fun doWork(): Result {
+                  HadithRepository.fetchOnlineHadith(ctx)
+                  HadithWidgetProvider.updateAllWidgets(ctx)
+                  return Result.success()
+              }
+              companion object {
+                  fun schedulePeriodicUpdate(c: Context, hours: Long) {
+                      val req = PeriodicWorkRequestBuilder<HadithUpdateWorker>(hours, TimeUnit.HOURS).build()
+                      WorkManager.getInstance(c).enqueueUniquePeriodicWork("dorar_work", ExistingPeriodicWorkPolicy.UPDATE, req)
+                  }
+              }
+          }
+          EOF
+          cat << 'EOF' > app/src/main/java/com/dorar/hadithwidget/HadithWidgetProvider.kt
+          package com.dorar.hadithwidget
+          import android.app.PendingIntent
+          import android.appwidget.AppWidgetManager
+          import android.appwidget.AppWidgetProvider
+          import android.content.*
+          import android.widget.RemoteViews
+          import kotlinx.coroutines.*
 
-                      <TextView
-                          android:id="@+id/tv_main_sharh"
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:textColor="#E2E8F0"
-                          android:textSize="15sp"
-                          android:lineSpacingExtra="6dp"
-                          android:fontFamily="@font/cairo" />
+          class HadithWidgetProvider : AppWidgetProvider() {
+              override fun onUpdate(c: Context, m: AppWidgetManager, ids: IntArray) { ids.forEach { updateAppWidget(c, m, it) } }
+              override fun onReceive(c: Context, i: Intent) {
+                  super.onReceive(c, i)
+                  if (i.action == "com.dorar.hadithwidget.ACTION_REFRESH") {
+                      val res = goAsync()
+                      CoroutineScope(Dispatchers.IO).launch {
+                          try { HadithRepository.fetchOnlineHadith(c); updateAllWidgets(c) } finally { res.finish() }
+                      }
+                  }
+              }
+              companion object {
+                  fun updateAllWidgets(c: Context) {
+                      val m = AppWidgetManager.getInstance(c)
+                      m.getAppWidgetIds(ComponentName(c, HadithWidgetProvider::class.java)).forEach { updateAppWidget(c, m, it) }
+                  }
+                  fun updateAppWidget(c: Context, m: AppWidgetManager, id: Int) {
+                      val h = HadithRepository.getCurrentHadith(c)
+                      val v = RemoteViews(c.packageName, R.layout.widget_hadith)
+                      v.setTextViewText(R.id.tv_widget_matn, h.matn)
+                      v.setTextViewText(R.id.tv_widget_footer, "الراوي: ${h.rawi} | ${h.source} (اضغط للشرح)")
+                      val openP = PendingIntent.getActivity(c, 0, Intent(c, MainActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+                      v.setOnClickPendingIntent(R.id.widget_root, openP)
+                      v.setOnClickPendingIntent(R.id.tv_widget_matn, openP)
+                      val refP = PendingIntent.getBroadcast(c, 1, Intent(c, HadithWidgetProvider::class.java).setAction("com.dorar.hadithwidget.ACTION_REFRESH"), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+                      v.setOnClickPendingIntent(R.id.btn_widget_refresh, refP)
+                      val sh = Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, "${h.matn}\n\nالشرح: ${h.sharh}"), "مشاركة")
+                      v.setOnClickPendingIntent(R.id.btn_widget_share, PendingIntent.getActivity(c, 2, sh, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+                      m.updateAppWidget(id, v)
+                  }
+              }
+          }
+          EOF
+          cat << 'EOF' > app/src/main/java/com/dorar/hadithwidget/MainActivity.kt
+          package com.dorar.hadithwidget
+          import android.os.Bundle
+          import android.view.View
+          import android.widget.*
+          import androidx.appcompat.app.AppCompatActivity
+          import androidx.lifecycle.lifecycleScope
+          import kotlinx.coroutines.launch
 
-                      <LinearLayout
-                          android:layout_width="match_parent"
-                          android:layout_height="wrap_content"
-                          android:orientation="horizontal"
-                          android:layout_marginTop="16dp">
+          class MainActivity : AppCompatActivity() {
+              override fun onCreate(savedInstanceState: Bundle?) {
+                  super.onCreate(savedInstanceState)
+                  setContentView(R.layout.activity_main)
+                  val tvMatn: TextView = findViewById(R.id.tv_main_matn)
+                  val tvMeta: TextView = findViewById(R.id.tv_main_meta)
+                  val tvSharh: TextView = findViewById(R.id.tv_main_sharh)
+                  val tvFav: TextView = findViewById(R.id.tv_favorites_list)
+                  val etSearch: EditText = findViewById(R.id.et_search)
+                  fun show(h: HadithItem) {
+                      tvMatn.text = h.matn
+                      tvMeta.text = "الراوي: ${h.rawi} | المحدث: ${h.muhaddith} | المصدر: ${h.source}"
+                      tvSharh.text = h.sharh
+                  }
+                  fun updateFav() {
+                      val f = HadithRepository.getFavorites(this)
+                      tvFav.text = if (f.isEmpty()) "لا توجد أحاديث محفوظة." else f.joinToString("\n\n────\n\n") { "• ${it.matn}" }
+                  }
+                  show(HadithRepository.getCurrentHadith(this))
+                  updateFav()
+                  findViewById<Button>(R.id.btn_new_hadith).setOnClickListener {
+                      Toast.makeText(this, "جاري الجلب من الدرر السنية...", Toast.LENGTH_SHORT).show()
+                      lifecycleScope.launch { show(HadithRepository.fetchOnlineHadith(this@MainActivity)); HadithWidgetProvider.updateAllWidgets(this@MainActivity) }
+                  }
+                  findViewById<Button>(R.id.btn_search).setOnClickListener {
+                      val q = etSearch.text.toString().trim()
+                      if (q.isNotEmpty()) lifecycleScope.launch { show(HadithRepository.fetchOnlineHadith(this@MainActivity, q)); HadithWidgetProvider.updateAllWidgets(this@MainActivity) }
+                  }
+                  findViewById<Button>(R.id.btn_add_fav).setOnClickListener {
+                      HadithRepository.addFavorite(this, HadithRepository.getCurrentHadith(this)); updateFav()
+                      Toast.makeText(this, "تم الحفظ في المفضلة ⭐", Toast.LENGTH_SHORT).show()
+                  }
+                  val sp: Spinner = findViewById(R.id.spinner_interval)
+                  val labels = arrayOf("كل ساعة", "كل 3 ساعات", "كل 6 ساعات", "كل 12 ساعة", "كل 24 ساعة")
+                  val vals = longArrayOf(1L, 3L, 6L, 12L, 24L)
+                  sp.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, labels)
+                  sp.setSelection(vals.indexOf(HadithRepository.getIntervalHours(this)).coerceAtLeast(0))
+                  sp.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                      override fun onItemSelected(p: AdapterView<*>?, v: View?, pos: Int, id: Long) {
+                          HadithRepository.setIntervalHours(this@MainActivity, vals[pos])
+                          HadithUpdateWorker.schedulePeriodicUpdate(this@MainActivity, vals[pos])
+                      }
+                      override fun onNothingSelected(p: AdapterView<*>?) {}
+                  }
+              }
+          }
+          EOF
 
-                          <Button
-                              android:id="@+id/btn_new_hadith"
-                              android:layout_width="0dp"
-                              android:layout_he
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.4'
+
+      - name: Build Debug APK
+        run: gradle assembleDebug
+
+      - name: Upload Ready APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Dorar-Hadith-Widget-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
