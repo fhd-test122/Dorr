@@ -22,8 +22,7 @@ jobs:
               "app/src/main/res/layout",
               "app/src/main/res/drawable",
               "app/src/main/res/xml",
-              "app/src/main/res/values",
-              "app/src/main/res/font"
+              "app/src/main/res/values"
           ]
           for d in dirs:
               os.makedirs(d, exist_ok=True)
@@ -32,7 +31,7 @@ jobs:
               with open(path, "w", encoding="utf-8") as f:
                   f.write(textwrap.dedent(content).lstrip())
 
-          write_file("settings.gradle.kts", """
+          write_file("settings.gradle.kts", r"""
               pluginManagement {
                   repositories {
                       google()
@@ -51,21 +50,21 @@ jobs:
               include(":app")
           """)
 
-          write_file("build.gradle.kts", """
+          write_file("build.gradle.kts", r"""
               plugins {
                   id("com.android.application") version "8.2.2" apply false
                   id("org.jetbrains.kotlin.android") version "1.9.22" apply false
               }
           """)
 
-          write_file("gradle.properties", """
+          write_file("gradle.properties", r"""
               org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
               android.useAndroidX=true
               kotlin.code.style=official
               android.nonTransitiveRClass=true
           """)
 
-          write_file("app/build.gradle.kts", """
+          write_file("app/build.gradle.kts", r"""
               plugins {
                   id("com.android.application")
                   id("org.jetbrains.kotlin.android")
@@ -110,7 +109,7 @@ jobs:
               }
           """)
 
-          write_file("app/src/main/AndroidManifest.xml", """
+          write_file("app/src/main/AndroidManifest.xml", r"""
               <?xml version="1.0" encoding="utf-8"?>
               <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -145,16 +144,12 @@ jobs:
                               android:name="android.appwidget.provider"
                               android:resource="@xml/hadith_widget_info" />
                       </receiver>
-
-                      <meta-data
-                          android:name="preloaded_fonts"
-                          android:resource="@array/preloaded_fonts" />
                   </application>
 
               </manifest>
           """)
 
-          write_file("app/src/main/res/drawable/bg_glass_widget.xml", """
+          write_file("app/src/main/res/drawable/bg_glass_widget.xml", r"""
               <?xml version="1.0" encoding="utf-8"?>
               <shape xmlns:android="http://schemas.android.com/apk/res/android"
                   android:shape="rectangle">
@@ -171,7 +166,7 @@ jobs:
               </shape>
           """)
 
-          write_file("app/src/main/res/drawable/bg_glass_card.xml", """
+          write_file("app/src/main/res/drawable/bg_glass_card.xml", r"""
               <?xml version="1.0" encoding="utf-8"?>
               <shape xmlns:android="http://schemas.android.com/apk/res/android"
                   android:shape="rectangle">
@@ -183,7 +178,7 @@ jobs:
               </shape>
           """)
 
-          write_file("app/src/main/res/xml/hadith_widget_info.xml", """
+          write_file("app/src/main/res/xml/hadith_widget_info.xml", r"""
               <?xml version="1.0" encoding="utf-8"?>
               <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
                   android:minWidth="250dp"
@@ -194,54 +189,18 @@ jobs:
                   android:widgetCategory="home_screen" />
           """)
 
-          write_file("app/src/main/res/values/styles.xml", """
+          write_file("app/src/main/res/values/styles.xml", r"""
               <?xml version="1.0" encoding="utf-8"?>
               <resources>
                   <style name="Theme.DorarHadith" parent="Theme.MaterialComponents.DayNight.NoActionBar">
                       <item name="colorPrimary">#0284C7</item>
                       <item name="colorPrimaryVariant">#0369A1</item>
                       <item name="colorOnPrimary">#FFFFFF</item>
-                      <item name="android:fontFamily">@font/cairo</item>
                   </style>
               </resources>
           """)
 
-          write_file("app/src/main/res/values/preloaded_fonts.xml", """
-              <?xml version="1.0" encoding="utf-8"?>
-              <resources>
-                  <array name="preloaded_fonts" translatable="false">
-                      <item>@font/cairo</item>
-                  </array>
-              </resources>
-          """)
-
-          write_file("app/src/main/res/font/cairo.xml", """
-              <?xml version="1.0" encoding="utf-8"?>
-              <font-family xmlns:app="http://schemas.android.com/apk/res-auto"
-                  app:fontProviderAuthority="com.google.android.gms.fonts"
-                  app:fontProviderPackage="com.google.android.gms"
-                  app:fontProviderQuery="Cairo"
-                  app:fontProviderCerts="@array/com_google_android_gms_fonts_certs">
-              </font-family>
-          """)
-
-          write_file("app/src/main/res/values/font_certs.xml", """
-              <?xml version="1.0" encoding="utf-8"?>
-              <resources>
-                  <array name="com_google_android_gms_fonts_certs">
-                      <item>@array/com_google_android_gms_fonts_certs_dev</item>
-                      <item>@array/com_google_android_gms_fonts_certs_prod</item>
-                  </array>
-                  <string-array name="com_google_android_gms_fonts_certs_dev">
-                      <item>MIIEqDCCA5CgAwIBAgIJANWFuGx90071MA0GCSqGSIb3DQEBBAUAMIGUMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEQMA4GA1UEChMHR29vZ2xlSTERMA8GA1UECxMIQW5kcm9pZDEQMA4GA1UEAxMHR29vZ2xlMSIwIAYJKoZIhvcNAQkBFhNhbmRyb2lkQGdvb2dsZS5jb20wHhcNMDgwNDE1MjMyMDE3WhcNMjcwODMwMjMyMDE3WjCBlDELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxEDAOBgNVBAoTB0dvb2dsZTERMA8GA1UECxMIQW5kcm9pZDEQMA4GA1UEAxMHR29vZ2xlMSIwIAYJKoZIhvcNAQkBFhNhbmRyb2lkQGdvb2dsZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQD04K335G+3sC9fP0vA9c1sM3bA6+W/91M8G/y7N5f5dG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3AgMBAAEwDQYJKoZIhvcNAQEEBQADggEBAFfP</item>
-                  </string-array>
-                  <string-array name="com_google_android_gms_fonts_certs_prod">
-                      <item>MIIEqDCCA5CgAwIBAgIJANWFuGx90071MA0GCSqGSIb3DQEBBAUAMIGUMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNTW91bnRhaW4gVmlldzEQMA4GA1UEChMHR29vZ2xlSTERMA8GA1UECxMIQW5kcm9pZDEQMA4GA1UEAxMHR29vZ2xlMSIwIAYJKoZIhvcNAQkBFhNhbmRyb2lkQGdvb2dsZS5jb20wHhcNMDgwNDE1MjMyMDE3WhcNMjcwODMwMjMyMDE3WjCBlDELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDU1vdW50YWluIFZpZXcxEDAOBgNVBAoTB0dvb2dsZTERMA8GA1UECxMIQW5kcm9pZDEQMA4GA1UEAxMHR29vZ2xlMSIwIAYJKoZIhvcNAQkBFhNhbmRyb2lkQGdvb2dsZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQD04K335G+3sC9fP0vA9c1sM3bA6+W/91M8G/y7N5f5dG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3J5eG3AgMBAAEwDQYJKoZIhvcNAQEEBQADggEBAFfP</item>
-                  </string-array>
-              </resources>
-          """)
-
-          write_file("app/src/main/res/layout/widget_hadith.xml", """
+          write_file("app/src/main/res/layout/widget_hadith.xml", r"""
               <?xml version="1.0" encoding="utf-8"?>
               <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                   android:id="@+id/widget_root"
@@ -266,7 +225,6 @@ jobs:
                           android:text="الموسوعة الحديثية • حديث صحيح"
                           android:textColor="#38BDF8"
                           android:textSize="12sp"
-                          android:fontFamily="@font/cairo"
                           android:textStyle="bold" />
 
                       <TextView
@@ -276,7 +234,6 @@ jobs:
                           android:text="مشاركة 📤"
                           android:textColor="#E2E8F0"
                           android:textSize="12sp"
-                          android:fontFamily="@font/cairo"
                           android:padding="4dp" />
 
                       <TextView
@@ -286,7 +243,6 @@ jobs:
                           android:text="تحديث 🔄"
                           android:textColor="#38BDF8"
                           android:textSize="12sp"
-                          android:fontFamily="@font/cairo"
                           android:padding="4dp" />
                   </LinearLayout>
 
@@ -304,8 +260,7 @@ jobs:
                       android:text="قال رسول الله ﷺ: (إنَّما الأعمالُ بالنِّيَّاتِ، وإنَّما لكلِّ امرئٍ ما نوى...)"
                       android:textColor="#FFFFFF"
                       android:textSize="15sp"
-                      android:lineSpacingExtra="4dp"
-                      android:fontFamily="@font/cairo" />
+                      android:lineSpacingExtra="4dp" />
 
                   <TextView
                       android:id="@+id/tv_widget_footer"
@@ -316,13 +271,12 @@ jobs:
                       android:textColor="#94A3B8"
                       android:textSize="11sp"
                       android:singleLine="true"
-                      android:ellipsize="end"
-                      android:fontFamily="@font/cairo" />
+                      android:ellipsize="end" />
 
               </RelativeLayout>
           """)
 
-          write_file("app/src/main/res/layout/activity_main.xml", """
+          write_file("app/src/main/res/layout/activity_main.xml", r"""
               <?xml version="1.0" encoding="utf-8"?>
               <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
                   android:layout_width="match_parent"
@@ -343,7 +297,6 @@ jobs:
                           android:textColor="#38BDF8"
                           android:textSize="22sp"
                           android:textStyle="bold"
-                          android:fontFamily="@font/cairo"
                           android:layout_marginBottom="12dp" />
 
                       <LinearLayout
@@ -363,15 +316,13 @@ jobs:
                               android:textColorHint="#94A3B8"
                               android:textColor="#FFFFFF"
                               android:background="@android:color/transparent"
-                              android:fontFamily="@font/cairo"
                               android:padding="8dp" />
 
                           <Button
                               android:id="@+id/btn_search"
                               android:layout_width="wrap_content"
                               android:layout_height="wrap_content"
-                              android:text="بحث"
-                              android:fontFamily="@font/cairo" />
+                              android:text="بحث" />
                       </LinearLayout>
 
                       <LinearLayout
@@ -389,7 +340,6 @@ jobs:
                               android:textColor="#FFFFFF"
                               android:textSize="18sp"
                               android:textStyle="bold"
-                              android:fontFamily="@font/cairo"
                               android:lineSpacingExtra="6dp"
                               android:layout_marginBottom="12dp" />
 
@@ -399,7 +349,6 @@ jobs:
                               android:layout_height="wrap_content"
                               android:textColor="#38BDF8"
                               android:textSize="13sp"
-                              android:fontFamily="@font/cairo"
                               android:layout_marginBottom="12dp" />
 
                           <View
@@ -415,7 +364,6 @@ jobs:
                               android:textColor="#FACC15"
                               android:textSize="15sp"
                               android:textStyle="bold"
-                              android:fontFamily="@font/cairo"
                               android:layout_marginBottom="6dp" />
 
                           <TextView
@@ -424,8 +372,7 @@ jobs:
                               android:layout_height="wrap_content"
                               android:textColor="#E2E8F0"
                               android:textSize="15sp"
-                              android:lineSpacingExtra="6dp"
-                              android:fontFamily="@font/cairo" />
+                              android:lineSpacingExtra="6dp" />
 
                           <LinearLayout
                               android:layout_width="match_parent"
@@ -439,7 +386,6 @@ jobs:
                                   android:layout_height="wrap_content"
                                   android:layout_weight="1"
                                   android:text="حديث جديد 🔄"
-                                  android:fontFamily="@font/cairo"
                                   android:layout_marginEnd="8dp" />
 
                               <Button
@@ -447,8 +393,7 @@ jobs:
                                   android:layout_width="0dp"
                                   android:layout_height="wrap_content"
                                   android:layout_weight="1"
-                                  android:text="حفظ في المفضلة ⭐"
-                                  android:fontFamily="@font/cairo" />
+                                  android:text="حفظ في المفضلة ⭐" />
                           </LinearLayout>
                       </LinearLayout>
 
@@ -467,7 +412,6 @@ jobs:
                               android:textColor="#FFFFFF"
                               android:textSize="16sp"
                               android:textStyle="bold"
-                              android:fontFamily="@font/cairo"
                               android:layout_marginBottom="8dp" />
 
                           <Spinner
@@ -491,7 +435,6 @@ jobs:
                               android:textColor="#FACC15"
                               android:textSize="16sp"
                               android:textStyle="bold"
-                              android:fontFamily="@font/cairo"
                               android:layout_marginBottom="8dp" />
 
                           <TextView
@@ -500,15 +443,14 @@ jobs:
                               android:layout_height="wrap_content"
                               android:text="لا توجد أحاديث محفوظة حالياً."
                               android:textColor="#CBD5E1"
-                              android:textSize="14sp"
-                              android:fontFamily="@font/cairo" />
+                              android:textSize="14sp" />
                       </LinearLayout>
 
                   </LinearLayout>
               </ScrollView>
           """)
 
-          write_file("app/src/main/java/com/dorar/hadithwidget/HadithRepository.kt", """
+          write_file("app/src/main/java/com/dorar/hadithwidget/HadithRepository.kt", r"""
               package com.dorar.hadithwidget
 
               import android.content.Context
@@ -691,7 +633,7 @@ jobs:
               }
           """)
 
-          write_file("app/src/main/java/com/dorar/hadithwidget/HadithUpdateWorker.kt", """
+          write_file("app/src/main/java/com/dorar/hadithwidget/HadithUpdateWorker.kt", r"""
               package com.dorar.hadithwidget
 
               import android.content.Context
@@ -729,7 +671,7 @@ jobs:
               }
           """)
 
-          write_file("app/src/main/java/com/dorar/hadithwidget/HadithWidgetProvider.kt", """
+          write_file("app/src/main/java/com/dorar/hadithwidget/HadithWidgetProvider.kt", r"""
               package com.dorar.hadithwidget
 
               import android.app.PendingIntent
@@ -822,7 +764,7 @@ jobs:
               }
           """)
 
-          write_file("app/src/main/java/com/dorar/hadithwidget/MainActivity.kt", """
+          write_file("app/src/main/java/com/dorar/hadithwidget/MainActivity.kt", r"""
               package com.dorar.hadithwidget
 
               import android.os.Bundle
