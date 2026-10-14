@@ -1,4 +1,4 @@
-name: Build Dorar Pro V3 APK
+name: Build Dorar Studio V5
 
 on:
   push:
@@ -12,14 +12,14 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Clean and Generate Pro V3 Project
+      - name: Clean and Generate Studio V5 Project
         run: |
           rm -rf app build settings.gradle.kts build.gradle.kts gradle.properties
           python3 - << 'PYEOF'
           import os, textwrap
 
           dirs = [
-              "app/src/main/java/com/dorar/hadithpro",
+              "app/src/main/java/com/dorar/studiov5",
               "app/src/main/res/layout",
               "app/src/main/res/drawable",
               "app/src/main/res/xml",
@@ -47,7 +47,7 @@ jobs:
                       mavenCentral()
                   }
               }
-              rootProject.name = "DorarProV3"
+              rootProject.name = "DorarStudioV5"
               include(":app")
           """)
 
@@ -72,15 +72,15 @@ jobs:
               }
 
               android {
-                  namespace = "com.dorar.hadithpro"
+                  namespace = "com.dorar.studiov5"
                   compileSdk = 34
 
                   defaultConfig {
-                      applicationId = "com.dorar.hadithpro"
+                      applicationId = "com.dorar.studiov5"
                       minSdk = 26
                       targetSdk = 34
-                      versionCode = 3
-                      versionName = "3.0-Pro"
+                      versionCode = 5
+                      versionName = "5.0-Studio"
                   }
 
                   buildTypes {
@@ -119,7 +119,7 @@ jobs:
 
                   <application
                       android:allowBackup="false"
-                      android:label="الدرر السنية Pro"
+                      android:label="أحاديث الدرر السنية"
                       android:supportsRtl="true"
                       android:usesCleartextTraffic="true"
                       android:theme="@style/Theme.DorarHadith">
@@ -137,10 +137,10 @@ jobs:
                       <receiver
                           android:name=".HadithWidgetProvider"
                           android:exported="true"
-                          android:label="ويدجت الدرر السنية Pro">
+                          android:label="ويدجت الحديث البسيط">
                           <intent-filter>
                               <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                              <action android:name="com.dorar.hadithpro.ACTION_REFRESH" />
+                              <action android:name="com.dorar.studiov5.ACTION_REFRESH" />
                           </intent-filter>
                           <meta-data
                               android:name="android.appwidget.provider"
@@ -151,44 +151,15 @@ jobs:
               </manifest>
           """)
 
-          # --- تصميم زجاجي فاخر بإطار ذهبي ومضيء (Glassmorphism V3) ---
-          write_file("app/src/main/res/drawable/bg_glass_widget_pro.xml", r"""
+          write_file("app/src/main/res/drawable/bg_glass_card.xml", r"""
               <?xml version="1.0" encoding="utf-8"?>
               <shape xmlns:android="http://schemas.android.com/apk/res/android"
                   android:shape="rectangle">
-                  <gradient
-                      android:angle="135"
-                      android:startColor="#E60B1120"
-                      android:centerColor="#CC1E293B"
-                      android:endColor="#E60F172A"
-                      android:type="linear" />
-                  <corners android:radius="28dp" />
-                  <stroke
-                      android:width="2dp"
-                      android:color="#99FACC15" />
-              </shape>
-          """)
-
-          write_file("app/src/main/res/drawable/bg_badge_gold.xml", r"""
-              <?xml version="1.0" encoding="utf-8"?>
-              <shape xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:shape="rectangle">
-                  <solid android:color="#26FACC15" />
-                  <corners android:radius="50dp" />
+                  <solid android:color="#1E293B" />
+                  <corners android:radius="20dp" />
                   <stroke
                       android:width="1dp"
-                      android:color="#80FACC15" />
-              </shape>
-          """)
-
-          write_file("app/src/main/res/drawable/bg_icon_circle.xml", r"""
-              <?xml version="1.0" encoding="utf-8"?>
-              <shape xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:shape="oval">
-                  <solid android:color="#33FFFFFF" />
-                  <stroke
-                      android:width="1dp"
-                      android:color="#66FACC15" />
+                      android:color="#33FFFFFF" />
               </shape>
           """)
 
@@ -196,27 +167,11 @@ jobs:
               <?xml version="1.0" encoding="utf-8"?>
               <shape xmlns:android="http://schemas.android.com/apk/res/android"
                   android:shape="rectangle">
-                  <solid android:color="#4D000000" />
-                  <corners android:radius="16dp" />
+                  <solid android:color="#0F172A" />
+                  <corners android:radius="14dp" />
                   <stroke
                       android:width="1dp"
                       android:color="#3338BDF8" />
-              </shape>
-          """)
-
-          write_file("app/src/main/res/drawable/bg_glass_card.xml", r"""
-              <?xml version="1.0" encoding="utf-8"?>
-              <shape xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:shape="rectangle">
-                  <gradient
-                      android:angle="135"
-                      android:startColor="#261E293B"
-                      android:endColor="#1AFFFFFF"
-                      android:type="linear" />
-                  <corners android:radius="22dp" />
-                  <stroke
-                      android:width="1dp"
-                      android:color="#4038BDF8" />
               </shape>
           """)
 
@@ -228,29 +183,16 @@ jobs:
                   android:viewportWidth="24"
                   android:viewportHeight="24">
                   <path
-                      android:fillColor="#FACC15"
+                      android:fillColor="#FFFFFF"
                       android:pathData="M17.65,6.35C16.2,4.9 14.21,4 12,4c-4.42,0 -7.99,3.58 -7.99,8s3.57,8 7.99,8c3.73,0 6.84,-2.55 7.73,-6h-2.08c-0.82,2.33 -3.04,4 -5.65,4 -3.31,0 -6,-2.69 -6,-6s2.69,-6 6,-6c1.66,0 3.14,0.69 4.22,1.78L13,11h7V4l-2.35,2.35z" />
-              </vector>
-          """)
-
-          write_file("app/src/main/res/drawable/ic_share_vec.xml", r"""
-              <?xml version="1.0" encoding="utf-8"?>
-              <vector xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:width="18dp"
-                  android:height="18dp"
-                  android:viewportWidth="24"
-                  android:viewportHeight="24">
-                  <path
-                      android:fillColor="#38BDF8"
-                      android:pathData="M18,16.08c-0.76,0 -1.44,0.3 -1.96,0.77L8.91,12.7c0.05,-0.23 0.09,-0.46 0.09,-0.7s-0.04,-0.47 -0.09,-0.7l7.05,-4.11c0.54,0.5 1.25,0.81 2.04,0.81 1.66,0 3,-1.34 3,-3s-1.34,-3 -3,-3 -3,1.34 -3,3c0,0.24 0.04,0.47 0.09,0.7L8.04,9.81C7.5,9.31 6.79,9 6,9c-1.66,0 -3,1.34 -3,3s1.34,3 3,3c0.79,0 1.5,-0.31 2.04,-0.81l7.12,4.16c-0.05,0.21 -0.08,0.43 -0.08,0.65 0,1.61 1.31,2.92 2.92,2.92 1.61,0 2.92,-1.31 2.92,-2.92s-1.31,-2.92 -2.92,-2.92z" />
               </vector>
           """)
 
           write_file("app/src/main/res/xml/hadith_widget_info.xml", r"""
               <?xml version="1.0" encoding="utf-8"?>
               <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-                  android:minWidth="260dp"
-                  android:minHeight="155dp"
+                  android:minWidth="250dp"
+                  android:minHeight="110dp"
                   android:updatePeriodMillis="3600000"
                   android:initialLayout="@layout/widget_hadith"
                   android:resizeMode="horizontal|vertical"
@@ -261,126 +203,73 @@ jobs:
               <?xml version="1.0" encoding="utf-8"?>
               <resources>
                   <style name="Theme.DorarHadith" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-                      <item name="colorPrimary">#FACC15</item>
+                      <item name="colorPrimary">#38BDF8</item>
                       <item name="colorPrimaryVariant">#0284C7</item>
-                      <item name="colorOnPrimary">#090D16</item>
-                      <item name="android:statusBarColor">#070A12</item>
+                      <item name="colorOnPrimary">#0F172A</item>
+                      <item name="android:statusBarColor">#090D16</item>
                   </style>
               </resources>
           """)
 
+          # --- تصميم الويدجت البسيط والنقي (الحديث + زر التحديث فقط) ---
           write_file("app/src/main/res/layout/widget_hadith.xml", r"""
               <?xml version="1.0" encoding="utf-8"?>
               <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                   android:id="@+id/widget_root"
                   android:layout_width="match_parent"
                   android:layout_height="match_parent"
-                  android:background="@drawable/bg_glass_widget_pro"
-                  android:padding="16dp"
                   android:layoutDirection="rtl">
 
-                  <LinearLayout
-                      android:id="@+id/widget_header"
+                  <!-- صورة الخلفية الديناميكية التي يتغير لونها وشفافيتها برمجياً بحواف دائرية -->
+                  <ImageView
+                      android:id="@+id/iv_widget_bg"
                       android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:orientation="horizontal"
-                      android:gravity="center_vertical">
+                      android:layout_height="match_parent"
+                      android:scaleType="fitXY" />
 
-                      <TextView
-                          android:id="@+id/tv_widget_badge"
-                          android:layout_width="wrap_content"
-                          android:layout_height="wrap_content"
-                          android:background="@drawable/bg_badge_gold"
-                          android:paddingHorizontal="12dp"
-                          android:paddingVertical="4dp"
-                          android:text="✨ الدرر السنية Pro • صحيح"
-                          android:textColor="#FACC15"
-                          android:textSize="11.5sp"
-                          android:textStyle="bold" />
+                  <!-- زر التحديث الصغير الأنيق في الزاوية فقط -->
+                  <ImageButton
+                      android:id="@+id/btn_widget_refresh"
+                      android:layout_width="32dp"
+                      android:layout_height="32dp"
+                      android:layout_alignParentTop="true"
+                      android:layout_alignParentEnd="true"
+                      android:layout_marginTop="10dp"
+                      android:layout_marginEnd="10dp"
+                      android:background="@android:color/transparent"
+                      android:src="@drawable/ic_refresh_vec"
+                      android:scaleType="centerInside"
+                      android:alpha="0.75"
+                      android:contentDescription="تحديث الحديث" />
 
-                      <TextView
-                          android:layout_width="0dp"
-                          android:layout_height="1dp"
-                          android:layout_weight="1" />
-
-                      <ImageButton
-                          android:id="@+id/btn_widget_share"
-                          android:layout_width="34dp"
-                          android:layout_height="34dp"
-                          android:background="@drawable/bg_icon_circle"
-                          android:src="@drawable/ic_share_vec"
-                          android:scaleType="centerInside"
-                          android:layout_marginEnd="8dp"
-                          android:contentDescription="مشاركة" />
-
-                      <ImageButton
-                          android:id="@+id/btn_widget_refresh"
-                          android:layout_width="34dp"
-                          android:layout_height="34dp"
-                          android:background="@drawable/bg_icon_circle"
-                          android:src="@drawable/ic_refresh_vec"
-                          android:scaleType="centerInside"
-                          android:contentDescription="تحديث" />
-                  </LinearLayout>
-
+                  <!-- نص الحديث النبوي فقط في منتصف الويدجت -->
                   <TextView
                       android:id="@+id/tv_widget_matn"
                       android:layout_width="match_parent"
                       android:layout_height="match_parent"
-                      android:layout_below="@id/widget_header"
-                      android:layout_above="@+id/widget_footer_box"
-                      android:layout_marginTop="10dp"
-                      android:layout_marginBottom="10dp"
-                      android:gravity="center_vertical"
-                      android:maxLines="5"
+                      android:layout_toStartOf="@id/btn_widget_refresh"
+                      android:paddingStart="18dp"
+                      android:paddingEnd="8dp"
+                      android:paddingVertical="14dp"
+                      android:gravity="center"
+                      android:maxLines="6"
                       android:ellipsize="end"
-                      android:text="قال رسول الله ﷺ: «إنَّما الأعمالُ بالنِّيَّاتِ، وإنَّما لكلِّ امرئٍ ما نوى»"
+                      android:text="قال رسول الله ﷺ: «الكَلِمَةُ الطَّيِّبَةُ صَدَقَةٌ»"
                       android:textColor="#FFFFFF"
-                      android:textSize="15.5sp"
+                      android:textSize="16sp"
                       android:textStyle="bold"
                       android:lineSpacingExtra="5dp" />
-
-                  <LinearLayout
-                      android:id="@+id/widget_footer_box"
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:layout_alignParentBottom="true"
-                      android:background="@drawable/bg_footer_pill"
-                      android:paddingHorizontal="12dp"
-                      android:paddingVertical="6dp"
-                      android:orientation="horizontal"
-                      android:gravity="center_vertical">
-
-                      <TextView
-                          android:id="@+id/tv_widget_footer"
-                          android:layout_width="0dp"
-                          android:layout_height="wrap_content"
-                          android:layout_weight="1"
-                          android:text="الراوي: عمر بن الخطاب | صحيح البخاري"
-                          android:textColor="#38BDF8"
-                          android:textSize="11sp"
-                          android:singleLine="true"
-                          android:ellipsize="end" />
-
-                      <TextView
-                          android:layout_width="wrap_content"
-                          android:layout_height="wrap_content"
-                          android:text="قراءة الشرح ⬅"
-                          android:textColor="#FACC15"
-                          android:textSize="11sp"
-                          android:textStyle="bold"
-                          android:layout_marginStart="8dp" />
-                  </LinearLayout>
 
               </RelativeLayout>
           """)
 
+          # --- تصميم شاشة التطبيق مع استوديو تخصيص الويدجت ---
           write_file("app/src/main/res/layout/activity_main.xml", r"""
               <?xml version="1.0" encoding="utf-8"?>
               <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
                   android:layout_width="match_parent"
                   android:layout_height="match_parent"
-                  android:background="#070A12"
+                  android:background="#090D16"
                   android:layoutDirection="rtl"
                   android:padding="16dp">
 
@@ -389,47 +278,24 @@ jobs:
                       android:layout_height="wrap_content"
                       android:orientation="vertical">
 
-                      <LinearLayout
+                      <TextView
                           android:layout_width="match_parent"
                           android:layout_height="wrap_content"
-                          android:orientation="horizontal"
-                          android:gravity="center_vertical"
-                          android:layout_marginBottom="16dp">
+                          android:text="موسوعة الدرر السنية"
+                          android:textColor="#38BDF8"
+                          android:textSize="23sp"
+                          android:textStyle="bold"
+                          android:layout_marginBottom="4dp" />
 
-                          <LinearLayout
-                              android:layout_width="0dp"
-                              android:layout_height="wrap_content"
-                              android:layout_weight="1"
-                              android:orientation="vertical">
+                      <TextView
+                          android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:text="اضغط على الويدجت في أي وقت لقراءة الشرح والراوي والمصدر هنا"
+                          android:textColor="#94A3B8"
+                          android:textSize="12sp"
+                          android:layout_marginBottom="16dp" />
 
-                              <TextView
-                                  android:layout_width="wrap_content"
-                                  android:layout_height="wrap_content"
-                                  android:text="الدرر السنية Pro"
-                                  android:textColor="#FACC15"
-                                  android:textSize="24sp"
-                                  android:textStyle="bold" />
-
-                              <TextView
-                                  android:layout_width="wrap_content"
-                                  android:layout_height="wrap_content"
-                                  android:text="الإصدار الاحترافي V3.0 • متصل بالموسوعة الحديثية"
-                                  android:textColor="#38BDF8"
-                                  android:textSize="12sp" />
-                          </LinearLayout>
-
-                          <TextView
-                              android:layout_width="wrap_content"
-                              android:layout_height="wrap_content"
-                              android:background="@drawable/bg_badge_gold"
-                              android:paddingHorizontal="12dp"
-                              android:paddingVertical="6dp"
-                              android:text="V3.0 Pro"
-                              android:textColor="#FACC15"
-                              android:textSize="12sp"
-                              android:textStyle="bold" />
-                      </LinearLayout>
-
+                      <!-- شريط البحث -->
                       <LinearLayout
                           android:layout_width="match_parent"
                           android:layout_height="wrap_content"
@@ -457,30 +323,19 @@ jobs:
                               android:layout_width="wrap_content"
                               android:layout_height="42dp"
                               android:text="بحث"
-                              android:backgroundTint="#FACC15"
+                              android:backgroundTint="#38BDF8"
                               android:textColor="#090D16"
                               android:textStyle="bold" />
                       </LinearLayout>
 
+                      <!-- بطاقة الحديث الكاملة (النص + الراوي + المصدر + الشرح + المشاركة) -->
                       <LinearLayout
                           android:layout_width="match_parent"
                           android:layout_height="wrap_content"
-                          android:background="@drawable/bg_glass_widget_pro"
+                          android:background="@drawable/bg_glass_card"
                           android:orientation="vertical"
                           android:padding="20dp"
                           android:layout_marginBottom="16dp">
-
-                          <TextView
-                              android:layout_width="wrap_content"
-                              android:layout_height="wrap_content"
-                              android:background="@drawable/bg_badge_gold"
-                              android:paddingHorizontal="12dp"
-                              android:paddingVertical="4dp"
-                              android:text="✨ الحديث النبوي المعروض حالياً"
-                              android:textColor="#FACC15"
-                              android:textSize="12sp"
-                              android:textStyle="bold"
-                              android:layout_marginBottom="14dp" />
 
                           <TextView
                               android:id="@+id/tv_main_matn"
@@ -500,6 +355,7 @@ jobs:
                               android:padding="12dp"
                               android:textColor="#38BDF8"
                               android:textSize="13sp"
+                              android:lineSpacingExtra="4dp"
                               android:layout_marginBottom="16dp" />
 
                           <TextView
@@ -523,31 +379,131 @@ jobs:
                               android:layout_width="match_parent"
                               android:layout_height="wrap_content"
                               android:orientation="horizontal"
-                              android:layout_marginTop="20dp">
+                              android:layout_marginTop="18dp">
 
                               <Button
                                   android:id="@+id/btn_new_hadith"
                                   android:layout_width="0dp"
-                                  android:layout_height="50dp"
+                                  android:layout_height="48dp"
                                   android:layout_weight="1"
                                   android:text="حديث جديد ↻"
-                                  android:backgroundTint="#FACC15"
+                                  android:backgroundTint="#38BDF8"
                                   android:textColor="#090D16"
                                   android:textStyle="bold"
-                                  android:layout_marginEnd="8dp" />
+                                  android:layout_marginEnd="6dp" />
+
+                              <Button
+                                  android:id="@+id/btn_share_main"
+                                  android:layout_width="0dp"
+                                  android:layout_height="48dp"
+                                  android:layout_weight="1"
+                                  android:text="مشاركة 📤"
+                                  android:backgroundTint="#334155"
+                                  android:textColor="#FFFFFF"
+                                  android:textStyle="bold"
+                                  android:layout_marginEnd="6dp" />
 
                               <Button
                                   android:id="@+id/btn_add_fav"
                                   android:layout_width="0dp"
-                                  android:layout_height="50dp"
+                                  android:layout_height="48dp"
                                   android:layout_weight="1"
-                                  android:text="حفظ للمفضلة ★"
-                                  android:backgroundTint="#0284C7"
-                                  android:textColor="#FFFFFF"
+                                  android:text="للمفضلة ★"
+                                  android:backgroundTint="#FACC15"
+                                  android:textColor="#090D16"
                                   android:textStyle="bold" />
                           </LinearLayout>
                       </LinearLayout>
 
+                      <!-- 🎨 استوديو تخصيص مظهر الويدجت (اللون، الشفافية، حجم الخط، لون الخط) -->
+                      <LinearLayout
+                          android:layout_width="match_parent"
+                          android:layout_height="wrap_content"
+                          android:background="@drawable/bg_glass_card"
+                          android:orientation="vertical"
+                          android:padding="18dp"
+                          android:layout_marginBottom="16dp">
+
+                          <TextView
+                              android:layout_width="match_parent"
+                              android:layout_height="wrap_content"
+                              android:text="🎨 استوديو تخصيص الويدجت (يتحدث فوراً):"
+                              android:textColor="#FACC15"
+                              android:textSize="17sp"
+                              android:textStyle="bold"
+                              android:layout_marginBottom="14dp" />
+
+                          <!-- 1. لون خلفية الويدجت -->
+                          <TextView
+                              android:layout_width="match_parent"
+                              android:layout_height="wrap_content"
+                              android:text="1. اختر لون خلفية الويدجت:"
+                              android:textColor="#E2E8F0"
+                              android:textSize="14sp"
+                              android:layout_marginBottom="6dp" />
+
+                          <Spinner
+                              android:id="@+id/spinner_bg_color"
+                              android:layout_width="match_parent"
+                              android:layout_height="46dp"
+                              android:background="#E2E8F0"
+                              android:paddingHorizontal="12dp"
+                              android:layout_marginBottom="14dp" />
+
+                          <!-- 2. درجة شفافية الويدجت -->
+                          <TextView
+                              android:id="@+id/tv_opacity_label"
+                              android:layout_width="match_parent"
+                              android:layout_height="wrap_content"
+                              android:text="2. درجة التعتيم / الشفافية: 85%"
+                              android:textColor="#E2E8F0"
+                              android:textSize="14sp"
+                              android:layout_marginBottom="4dp" />
+
+                          <SeekBar
+                              android:id="@+id/seek_opacity"
+                              android:layout_width="match_parent"
+                              android:layout_height="wrap_content"
+                              android:max="100"
+                              android:progress="85"
+                              android:layout_marginBottom="14dp" />
+
+                          <!-- 3. حجم خط الحديث في الويدجت -->
+                          <TextView
+                              android:id="@+id/tv_fontsize_label"
+                              android:layout_width="match_parent"
+                              android:layout_height="wrap_content"
+                              android:text="3. حجم خط الحديث في الويدجت: 16"
+                              android:textColor="#E2E8F0"
+                              android:textSize="14sp"
+                              android:layout_marginBottom="4dp" />
+
+                          <SeekBar
+                              android:id="@+id/seek_fontsize"
+                              android:layout_width="match_parent"
+                              android:layout_height="wrap_content"
+                              android:max="14"
+                              android:progress="4"
+                              android:layout_marginBottom="14dp" />
+
+                          <!-- 4. لون الخط في الويدجت -->
+                          <TextView
+                              android:layout_width="match_parent"
+                              android:layout_height="wrap_content"
+                              android:text="4. اختر لون خط الحديث:"
+                              android:textColor="#E2E8F0"
+                              android:textSize="14sp"
+                              android:layout_marginBottom="6dp" />
+
+                          <Spinner
+                              android:id="@+id/spinner_text_color"
+                              android:layout_width="match_parent"
+                              android:layout_height="46dp"
+                              android:background="#E2E8F0"
+                              android:paddingHorizontal="12dp" />
+                      </LinearLayout>
+
+                      <!-- إعدادات مؤقت التحديث -->
                       <LinearLayout
                           android:layout_width="match_parent"
                           android:layout_height="wrap_content"
@@ -559,7 +515,7 @@ jobs:
                           <TextView
                               android:layout_width="match_parent"
                               android:layout_height="wrap_content"
-                              android:text="⏱️ الفترة الزمنية لتغيير الحديث في الويدجت:"
+                              android:text="⏱️ الفترة الزمنية لتغيير الحديث تلقائياً:"
                               android:textColor="#FFFFFF"
                               android:textSize="15sp"
                               android:textStyle="bold"
@@ -568,11 +524,12 @@ jobs:
                           <Spinner
                               android:id="@+id/spinner_interval"
                               android:layout_width="match_parent"
-                              android:layout_height="48dp"
+                              android:layout_height="46dp"
                               android:background="#E2E8F0"
                               android:paddingHorizontal="12dp" />
                       </LinearLayout>
 
+                      <!-- قسم المفضلة -->
                       <LinearLayout
                           android:layout_width="match_parent"
                           android:layout_height="wrap_content"
@@ -603,8 +560,8 @@ jobs:
               </ScrollView>
           """)
 
-          write_file("app/src/main/java/com/dorar/hadithpro/HadithRepository.kt", r"""
-              package com.dorar.hadithpro
+          write_file("app/src/main/java/com/dorar/studiov5/HadithRepository.kt", r"""
+              package com.dorar.studiov5
 
               import android.content.Context
               import com.google.gson.Gson
@@ -627,18 +584,26 @@ jobs:
                   val sharh: String
               )
 
+              data class WidgetStyleConfig(
+                  val bgColorHex: String = "#0F172A",
+                  val opacityPercent: Int = 85,
+                  val fontSizeSp: Float = 16f,
+                  val textColorHex: String = "#FFFFFF"
+              )
+
               object HadithRepository {
-                  private const val PREFS_NAME = "dorar_pro_v3_prefs"
+                  private const val PREFS_NAME = "dorar_studio_v5_prefs"
                   private const val KEY_CURRENT = "current_hadith"
                   private const val KEY_CACHE = "cached_hadiths"
                   private const val KEY_FAVORITES = "favorite_hadiths"
                   private const val KEY_INTERVAL = "update_interval_hours"
+                  private const val KEY_STYLE = "widget_style_config"
 
                   private val gson = Gson()
 
                   private val richFallbackList = listOf(
-                      HadithItem("قال رسول الله ﷺ: «إنَّما الأعمالُ بالنِّيَّاتِ، وإنَّما لكلِّ امرئٍ ما نوى»", "عمر بن الخطاب", "البخاري", "صحيح البخاري", "صحيح", "يبين النبي ﷺ أن مدار قبول الأعمال وصحتها وترتب الثواب عليها إنما هو بالنية الصالحة وإخلاص العمل لله وحده."),
                       HadithItem("قال رسول الله ﷺ: «الكَلِمَةُ الطَّيِّبَةُ صَدَقَةٌ»", "أبو هريرة", "البخاري ومسلم", "صحيح البخاري", "صحيح", "كل كلام طيب يدخل السرور على قلب المؤمن أو يصلح بين الناس أو يذكر بالله فهو بمنزلة الصدقة بالمال في الأجر والثواب."),
+                      HadithItem("قال رسول الله ﷺ: «إنَّما الأعمالُ بالنِّيَّاتِ، وإنَّما لكلِّ امرئٍ ما نوى»", "عمر بن الخطاب", "البخاري", "صحيح البخاري", "صحيح", "يبين النبي ﷺ أن مدار قبول الأعمال وصحتها وترتب الثواب عليها إنما هو بالنية الصالحة وإخلاص العمل لله وحده."),
                       HadithItem("قال رسول الله ﷺ: «مَن كانَ يُؤْمِنُ باللَّهِ واليَومِ الآخِرِ فَلْيَقُلْ خَيْرًا أوْ لِيَصْمُتْ»", "أبو هريرة", "البخاري ومسلم", "صحيح مسلم", "صحيح", "دعوة لحفظ اللسان، فالمؤمن إما أن يتحدث بكلام فيه خير ومنفعة فيؤجر عليه، وإما أن يمسك لسانه ويسكت ليسلم من الإثم."),
                       HadithItem("قال رسول الله ﷺ: «لا تَحاسَدُوا، ولا تَناجَشُوا، ولا تَباغَضُوا، ولا تَدابَرُوا، وكُونُوا عِبادَ اللهِ إخْوانًا»", "أنس بن مالك", "مسلم", "صحيح مسلم", "صحيح", "ينهي النبي ﷺ عن كل ما يفسد القلوب من الحسد والتباغض والقطيعة، ويأمر بتحقيق الأخوة الإيمانية الصادقة."),
                       HadithItem("قال رسول الله ﷺ: «الدِّينُ النَّصِيحَةُ» قلنا: لِمَن؟ قال: «لِلَّهِ ولِكِتابِهِ ولِرَسولِهِ ولِأَئِمَّةِ المُسْلِمِينَ وعامَّتِهِمْ»", "تميم الداري", "مسلم", "صحيح مسلم", "صحيح", "عماد الدين وقوامه هو الإخلاص لله، والعمل بكتابه، واتباع سنة نبيه ﷺ، وإرادة الخير لعموم المسلمين."),
@@ -646,17 +611,12 @@ jobs:
                       HadithItem("قال رسول الله ﷺ: «لا يُؤْمِنُ أحَدُكُمْ حتَّى يُحِبَّ لأخِيهِ ما يُحِبُّ لِنَفْسِهِ»", "أنس بن مالك", "البخاري ومسلم", "صحيح البخاري", "صحيح", "من علامات كمال الإيمان أن يتمنى المسلم لأخيه المسلم من الخير والطاعة والرزق مثل ما يتمناه لنفسه تماماً."),
                       HadithItem("قال رسول الله ﷺ: «اتَّقِ اللهَ حَيثُما كُنتَ، وأَتْبِعِ السَّيِّئَةَ الحَسَنَةَ تَمْحُها، وخالِقِ النَّاسَ بِخُلُقٍ حَسَنٍ»", "أبو ذر الغفاري", "الترمذي", "سنن الترمذي", "حسن صحيح", "وصية جامعة تجمع حق الله بالتقوى في السر والعلن، ومداواة الذنوب بالحسنات، ومعاملة الخلق بالحسنى."),
                       HadithItem("قال رسول الله ﷺ: «احْفَظِ اللهَ يَحْفَظْكَ، احْفَظِ اللهَ تَجِدْهُ تُجاهَكَ، إذا سَأَلْتَ فاسْأَلِ اللهَ، وإذا اسْتَعَنْتَ فاسْتَعِنْ باللهِ»", "عبدالله بن عباس", "الترمذي", "سنن الترمذي", "صحيح", "من حفظ حدود الله وأوامره حفظه الله في دينه ودنياه وأهله، وأغناه بفضله عن سؤال الخلق."),
-                      HadithItem("قال رسول الله ﷺ: «الطُّهُورُ شَطْرُ الإيمانِ، والحَمْدُ لِلَّهِ تَمْلَأُ المِيزانَ، وسُبْحانَ اللهِ والحَمْدُ لِلَّهِ تَمْلَآنِ ما بَيْنَ السَّمَواتِ والأرْضِ»", "أبو مالك الأشعري", "مسلم", "صحيح مسلم", "صحيح", "بيان لعظيم فضل الطهارة الحسية والمعنوية، وعظيم أجر الذكر والتسبيح والتحميد في ميزان العبد يوم القيامة."),
                       HadithItem("قال رسول الله ﷺ: «ما نَقَصَتْ صَدَقَةٌ مِن مالٍ، وما زادَ اللهُ عَبْدًا بعَفْوٍ إلَّا عِزًّا، وما تَواضَعَ أحَدٌ لِلَّهِ إلَّا رَفَعَهُ اللهُ»", "أبو هريرة", "مسلم", "صحيح مسلم", "صحيح", "يبارك الله في المال الذي تُخرج منه الصدقة، ويرفع قدر المتواضعين والعافين عن الناس في الدنيا والآخرة."),
                       HadithItem("قال رسول الله ﷺ: «تبسُّمُكَ في وجهِ أخيكَ لكَ صدقةٌ»", "أبو ذر الغفاري", "الترمذي", "سنن الترمذي", "صحيح", "إظهار البشاشة والسرور عند لقاء المؤمنين عبادة يؤجر عليها المسلم كما يؤجر على الصدقة."),
                       HadithItem("قال رسول الله ﷺ: «المُسلِمُ مَن سَلِمَ المُسلِمونَ مِن لِسانِهِ ويَدِهِ»", "عبدالله بن عمرو", "البخاري ومسلم", "صحيح البخاري", "صحيح", "المسلم الكامل هو الذي يكف أذى لسانه من الغيبة والشتم، ويكف أذى يده عن الاعتداء على الناس."),
                       HadithItem("قال رسول الله ﷺ: «مَن سَلَكَ طَرِيقًا يَلْتَمِسُ فيه عِلْمًا، سَهَّلَ اللهُ له به طَرِيقًا إلى الجَنَّةِ»", "أبو هريرة", "مسلم", "صحيح مسلم", "صحيح", "فضل طلب العلم الشرعي والنافع، وأنه من أعظم الأسباب الموصلة إلى رضوان الله والجنة."),
                       HadithItem("قال رسول الله ﷺ: «كَلِمَتانِ خَفِيفَتانِ علَى اللِّسانِ، ثَقِيلَتانِ في المِيزانِ، حَبِيبَتانِ إلى الرَّحْمَنِ: سُبْحانَ اللَّهِ وبِحَمْدِهِ، سُبْحانَ اللَّهِ العَظِيمِ»", "أبو هريرة", "البخاري ومسلم", "صحيح البخاري", "صحيح", "ترغيب في ملازمة هذا الذكر العظيم لسهولة النطق به وعظم ثقله في ميزان الحسنات ومحبة الله له."),
-                      HadithItem("قال رسول الله ﷺ: «أحَبُّ الأعمالِ إلى اللهِ أدْوَمُها وإنْ قَلَّ»", "عائشة أم المؤمنين", "البخاري ومسلم", "صحيح البخاري", "صحيح", "المداومة والاستمرار على العمل الصالح القليل خير وأحب إلى الله من العمل الكثير المنقطع."),
-                      HadithItem("قال رسول الله ﷺ: «الراحمونَ يرحمُهمُ الرحمنُ، ارحَموا مَن في الأرضِ يرحَمْكم مَن في السماءِ»", "عبدالله بن عمرو", "أبو داود والترمذي", "سنن الترمذي", "صحيح", "جزاء الإحسان والرحمة بالخلق أن يفيض الله على العبد من رحمته الواسعة ومغفرته."),
-                      HadithItem("قال رسول الله ﷺ: «عَجَبًا لأَمْرِ المُؤْمِنِ، إنَّ أمْرَهُ كُلَّهُ خَيْرٌ، إنْ أصابَتْهُ سَرَّاءُ شَكَرَ فَكانَ خَيْرًا له، وإنْ أصابَتْهُ ضَرَّاءُ صَبَرَ فَكانَ خَيْرًا له»", "صهيب الرومي", "مسلم", "صحيح مسلم", "صحيح", "المؤمن في ربح دائم مع الله، يتقلب بين أجر الشاكرين عند النعمة وأجر الصابرين عند البلاء."),
-                      HadithItem("قال رسول الله ﷺ: «ليسَ الشَّدِيدُ بالصُّرَعَةِ، إنَّما الشَّدِيدُ الذي يَمْلِكُ نَفْسَهُ عِنْدَ الغَضَبِ»", "أبو هريرة", "البخاري ومسلم", "صحيح البخاري", "صحيح", "القوة الحقيقية ليست في التغلب على الناس بالأبدان، بل في مجاهدة النفس وضبطها ساعة الغضب."),
-                      HadithItem("قال رسول الله ﷺ: «مَن صَلَّى عَلَيَّ صَلاةً صَلَّى اللهُ عليه بها عَشْرًا»", "أبو هريرة", "مسلم", "صحيح مسلم", "صحيح", "فضل الإكثار من الصلاة والسلام على النبي ﷺ، وأن الله يثني على المصلي في الملأ الأعلى ويرحمه عشر مرات.")
+                      HadithItem("قال رسول الله ﷺ: «أحَبُّ الأعمالِ إلى اللهِ أدْوَمُها وإنْ قَلَّ»", "عائشة أم المؤمنين", "البخاري ومسلم", "صحيح البخاري", "صحيح", "المداومة والاستمرار على العمل الصالح القليل خير وأحب إلى الله من العمل الكثير المنقطع.")
                   )
 
                   suspend fun fetchOnlineHadith(context: Context, searchQuery: String? = null): HadithItem = withContext(Dispatchers.IO) {
@@ -688,7 +648,7 @@ jobs:
                           val validItems = mutableListOf<HadithItem>()
                           for (i in 0 until minOf(hadithElements.size, infoElements.size)) {
                               val cleanMatn = hadithElements[i].text().trim().replace(Regex("^[0-9\\s\\-]+"), "")
-                              if (cleanMatn.length in 25..360 && cleanMatn != currentMatn) {
+                              if (cleanMatn.length in 25..340 && cleanMatn != currentMatn) {
                                   val info = infoElements[i].text()
                                   val rawi = extractField(info, "الراوي:", "المحدث:")
                                   val muhaddith = extractField(info, "المحدث:", "المصدر:")
@@ -793,11 +753,26 @@ jobs:
                       val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                       return prefs.getLong(KEY_INTERVAL, 6L)
                   }
+
+                  fun saveWidgetStyle(context: Context, style: WidgetStyleConfig) {
+                      val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                      prefs.edit().putString(KEY_STYLE, gson.toJson(style)).apply()
+                  }
+
+                  fun getWidgetStyle(context: Context): WidgetStyleConfig {
+                      val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                      val json = prefs.getString(KEY_STYLE, null)
+                      return if (json != null) {
+                          gson.fromJson(json, WidgetStyleConfig::class.java)
+                      } else {
+                          WidgetStyleConfig()
+                      }
+                  }
               }
           """)
 
-          write_file("app/src/main/java/com/dorar/hadithpro/HadithUpdateWorker.kt", r"""
-              package com.dorar.hadithpro
+          write_file("app/src/main/java/com/dorar/studiov5/HadithUpdateWorker.kt", r"""
+              package com.dorar.studiov5
 
               import android.content.Context
               import androidx.work.CoroutineWorker
@@ -819,7 +794,7 @@ jobs:
                   }
 
                   companion object {
-                      private const val WORK_NAME = "dorar_pro_periodic_work"
+                      private const val WORK_NAME = "dorar_studio_v5_periodic_work"
 
                       fun schedulePeriodicUpdate(context: Context, hours: Long) {
                           val request = PeriodicWorkRequestBuilder<HadithUpdateWorker>(hours, TimeUnit.HOURS)
@@ -834,8 +809,8 @@ jobs:
               }
           """)
 
-          write_file("app/src/main/java/com/dorar/hadithpro/HadithWidgetProvider.kt", r"""
-              package com.dorar.hadithpro
+          write_file("app/src/main/java/com/dorar/studiov5/HadithWidgetProvider.kt", r"""
+              package com.dorar.studiov5
 
               import android.app.PendingIntent
               import android.appwidget.AppWidgetManager
@@ -843,6 +818,12 @@ jobs:
               import android.content.ComponentName
               import android.content.Context
               import android.content.Intent
+              import android.graphics.Bitmap
+              import android.graphics.Canvas
+              import android.graphics.Color
+              import android.graphics.Paint
+              import android.graphics.RectF
+              import android.util.TypedValue
               import android.widget.RemoteViews
               import android.widget.Toast
               import kotlinx.coroutines.CoroutineScope
@@ -861,7 +842,7 @@ jobs:
                   override fun onReceive(context: Context, intent: Intent) {
                       super.onReceive(context, intent)
                       if (intent.action == ACTION_REFRESH) {
-                          Toast.makeText(context, "✨ جاري جلب حديث جديد من الدرر السنية...", Toast.LENGTH_SHORT).show()
+                          Toast.makeText(context, "جاري تحديث الحديث...", Toast.LENGTH_SHORT).show()
                           val pendingResult = goAsync()
                           CoroutineScope(Dispatchers.IO).launch {
                               try {
@@ -877,7 +858,7 @@ jobs:
                   }
 
                   companion object {
-                      const val ACTION_REFRESH = "com.dorar.hadithpro.ACTION_REFRESH"
+                      const val ACTION_REFRESH = "com.dorar.studiov5.ACTION_REFRESH"
 
                       fun updateAllWidgets(context: Context) {
                           val manager = AppWidgetManager.getInstance(context)
@@ -887,16 +868,58 @@ jobs:
                           }
                       }
 
+                      // توليد خلفية زجاجية بحواف دائرية باللون والشفافية التي يختارها المستخدم
+                      private fun createGlassBitmap(bgColorHex: String, opacityPercent: Int, strokeColorHex: String): Bitmap {
+                          val width = 800
+                          val height = 400
+                          val bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                          val canvas = Canvas(bmp)
+
+                          val baseColor = try { Color.parseColor(bgColorHex) } catch (_: Exception) { Color.parseColor("#0F172A") }
+                          val alpha = ((opacityPercent.coerceIn(0, 100) / 100f) * 255).toInt()
+                          val fillColor = Color.argb(alpha, Color.red(baseColor), Color.green(baseColor), Color.blue(baseColor))
+
+                          val rect = RectF(4f, 4f, width - 4f, height - 4f)
+                          val radius = 56f
+
+                          val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                              style = Paint.Style.FILL
+                              color = fillColor
+                          }
+                          canvas.drawRoundRect(rect, radius, radius, fillPaint)
+
+                          if (opacityPercent > 5) {
+                              val strokeBase = try { Color.parseColor(strokeColorHex) } catch (_: Exception) { Color.WHITE }
+                              val strokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                                  style = Paint.Style.STROKE
+                                  strokeWidth = 3.5f
+                                  color = Color.argb(90, Color.red(strokeBase), Color.green(strokeBase), Color.blue(strokeBase))
+                              }
+                              canvas.drawRoundRect(rect, radius, radius, strokePaint)
+                          }
+
+                          return bmp
+                      }
+
                       fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
                           val hadith = HadithRepository.getCurrentHadith(context)
+                          val style = HadithRepository.getWidgetStyle(context)
                           val views = RemoteViews(context.packageName, R.layout.widget_hadith)
 
-                          views.setTextViewText(R.id.tv_widget_matn, hadith.matn)
-                          views.setTextViewText(
-                              R.id.tv_widget_footer,
-                              "الراوي: " + hadith.rawi + " | " + hadith.source
-                          )
+                          val textColor = try { Color.parseColor(style.textColorHex) } catch (_: Exception) { Color.WHITE }
 
+                          views.setTextViewText(R.id.tv_widget_matn, hadith.matn)
+                          views.setTextColor(R.id.tv_widget_matn, textColor)
+                          views.setTextViewTextSize(R.id.tv_widget_matn, TypedValue.COMPLEX_UNIT_SP, style.fontSizeSp)
+
+                          // تلوين أيقونة التحديث بنفس لون الخط المختار
+                          views.setInt(R.id.btn_widget_refresh, "setColorFilter", textColor)
+
+                          // رسم الخلفية الزجاجية المخصصة
+                          val bgBitmap = createGlassBitmap(style.bgColorHex, style.opacityPercent, style.textColorHex)
+                          views.setImageViewBitmap(R.id.iv_widget_bg, bgBitmap)
+
+                          // فتح التطبيق عند الضغط على الحديث لقراءة الشرح والراوي
                           val openAppIntent = Intent(context, MainActivity::class.java)
                           val openAppPending = PendingIntent.getActivity(
                               context, 0, openAppIntent,
@@ -904,8 +927,9 @@ jobs:
                           )
                           views.setOnClickPendingIntent(R.id.widget_root, openAppPending)
                           views.setOnClickPendingIntent(R.id.tv_widget_matn, openAppPending)
-                          views.setOnClickPendingIntent(R.id.widget_footer_box, openAppPending)
+                          views.setOnClickPendingIntent(R.id.iv_widget_bg, openAppPending)
 
+                          // زر التحديث الفوري
                           val refreshIntent = Intent(context, HadithWidgetProvider::class.java).apply {
                               action = ACTION_REFRESH
                           }
@@ -915,29 +939,16 @@ jobs:
                           )
                           views.setOnClickPendingIntent(R.id.btn_widget_refresh, refreshPending)
 
-                          val shareText = hadith.matn + "\n\nالراوي: " + hadith.rawi + " | المصدر: " + hadith.source + "\n\nالشرح:\n" + hadith.sharh
-                          val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                              type = "text/plain"
-                              putExtra(Intent.EXTRA_TEXT, shareText)
-                          }
-                          val chooser = Intent.createChooser(shareIntent, "مشاركة الحديث النبوي").apply {
-                              addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                          }
-                          val sharePending = PendingIntent.getActivity(
-                              context, 2, chooser,
-                              PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                          )
-                          views.setOnClickPendingIntent(R.id.btn_widget_share, sharePending)
-
                           appWidgetManager.updateAppWidget(appWidgetId, views)
                       }
                   }
               }
           """)
 
-          write_file("app/src/main/java/com/dorar/hadithpro/MainActivity.kt", r"""
-              package com.dorar.hadithpro
+          write_file("app/src/main/java/com/dorar/studiov5/MainActivity.kt", r"""
+              package com.dorar.studiov5
 
+              import android.content.Intent
               import android.os.Bundle
               import android.view.View
               import android.widget.*
@@ -964,9 +975,18 @@ jobs:
                       etSearch = findViewById(R.id.et_search)
 
                       val btnNewHadith: Button = findViewById(R.id.btn_new_hadith)
+                      val btnShareMain: Button = findViewById(R.id.btn_share_main)
                       val btnAddFav: Button = findViewById(R.id.btn_add_fav)
                       val btnSearch: Button = findViewById(R.id.btn_search)
                       val spinnerInterval: Spinner = findViewById(R.id.spinner_interval)
+
+                      // عناصر استوديو تخصيص الويدجت
+                      val spinnerBgColor: Spinner = findViewById(R.id.spinner_bg_color)
+                      val seekOpacity: SeekBar = findViewById(R.id.seek_opacity)
+                      val tvOpacityLabel: TextView = findViewById(R.id.tv_opacity_label)
+                      val seekFontSize: SeekBar = findViewById(R.id.seek_fontsize)
+                      val tvFontSizeLabel: TextView = findViewById(R.id.tv_fontsize_label)
+                      val spinnerTextColor: Spinner = findViewById(R.id.spinner_text_color)
 
                       displayHadith(HadithRepository.getCurrentHadith(this))
                       refreshFavoritesUI()
@@ -981,6 +1001,16 @@ jobs:
                               btnNewHadith.isEnabled = true
                               btnNewHadith.text = "حديث جديد ↻"
                           }
+                      }
+
+                      btnShareMain.setOnClickListener {
+                          val h = HadithRepository.getCurrentHadith(this)
+                          val shareText = h.matn + "\n\nالراوي: " + h.rawi + " | المصدر: " + h.source + " (" + h.grade + ")\n\nالشرح:\n" + h.sharh
+                          val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                              type = "text/plain"
+                              putExtra(Intent.EXTRA_TEXT, shareText)
+                          }
+                          startActivity(Intent.createChooser(shareIntent, "مشاركة الحديث النبوي وشرحه"))
                       }
 
                       btnSearch.setOnClickListener {
@@ -1002,15 +1032,79 @@ jobs:
                           Toast.makeText(this, "تم حفظ الحديث في المفضلة ★", Toast.LENGTH_SHORT).show()
                       }
 
+                      // --- إعدادات استوديو الويدجت ---
+                      val bgLabels = arrayOf("كحلي زجاجي داكن", "أسود فحمي ملكي", "أخضر زمردي داكن", "بني كلاسيكي دافئ", "بنفسجي ليلي", "أبيض ناصع")
+                      val bgHexes = arrayOf("#0F172A", "#09090B", "#064E3B", "#271C19", "#1E1B4B", "#FFFFFF")
+
+                      val txtLabels = arrayOf("أبيض ناصع", "ذهبي فاخر", "سماوي هادئ", "أخضر زمردي فاتح", "أسود داكن (للخلفية البيضاء)")
+                      val txtHexes = arrayOf("#FFFFFF", "#FACC15", "#38BDF8", "#34D399", "#0F172A")
+
+                      spinnerBgColor.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, bgLabels)
+                      spinnerTextColor.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, txtLabels)
+
+                      val currentStyle = HadithRepository.getWidgetStyle(this)
+                      spinnerBgColor.setSelection(bgHexes.indexOf(currentStyle.bgColorHex).coerceAtLeast(0))
+                      spinnerTextColor.setSelection(txtHexes.indexOf(currentStyle.textColorHex).coerceAtLeast(0))
+
+                      seekOpacity.progress = currentStyle.opacityPercent
+                      tvOpacityLabel.text = "2. درجة التعتيم / الشفافية: " + currentStyle.opacityPercent + "%"
+
+                      val initialFontProgress = (currentStyle.fontSizeSp.toInt() - 12).coerceIn(0, 14)
+                      seekFontSize.progress = initialFontProgress
+                      tvFontSizeLabel.text = "3. حجم خط الحديث في الويدجت: " + currentStyle.fontSizeSp.toInt()
+
+                      fun saveAndApplyStyle() {
+                          val chosenBg = bgHexes[spinnerBgColor.selectedItemPosition]
+                          val chosenTxt = txtHexes[spinnerTextColor.selectedItemPosition]
+                          val chosenOpacity = seekOpacity.progress
+                          val chosenFont = (12 + seekFontSize.progress).toFloat()
+
+                          val newStyle = WidgetStyleConfig(
+                              bgColorHex = chosenBg,
+                              opacityPercent = chosenOpacity,
+                              fontSizeSp = chosenFont,
+                              textColorHex = chosenTxt
+                          )
+                          HadithRepository.saveWidgetStyle(this, newStyle)
+                          HadithWidgetProvider.updateAllWidgets(this)
+                      }
+
+                      spinnerBgColor.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                          override fun onItemSelected(p: AdapterView<*>?, v: View?, pos: Int, id: Long) = saveAndApplyStyle()
+                          override fun onNothingSelected(p: AdapterView<*>?) {}
+                      }
+
+                      spinnerTextColor.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                          override fun onItemSelected(p: AdapterView<*>?, v: View?, pos: Int, id: Long) = saveAndApplyStyle()
+                          override fun onNothingSelected(p: AdapterView<*>?) {}
+                      }
+
+                      seekOpacity.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                          override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                              tvOpacityLabel.text = "2. درجة التعتيم / الشفافية: " + progress + "%"
+                              if (fromUser) saveAndApplyStyle()
+                          }
+                          override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+                          override fun onStopTrackingTouch(seekBar: SeekBar?) = saveAndApplyStyle()
+                      })
+
+                      seekFontSize.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                          override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                              val size = 12 + progress
+                              tvFontSizeLabel.text = "3. حجم خط الحديث في الويدجت: " + size
+                              if (fromUser) saveAndApplyStyle()
+                          }
+                          override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+                          override fun onStopTrackingTouch(seekBar: SeekBar?) = saveAndApplyStyle()
+                      })
+
+                      // --- إعدادات المؤقت ---
                       val intervalsLabels = arrayOf("كل ساعة", "كل 3 ساعات", "كل 6 ساعات", "كل 12 ساعة", "كل 24 ساعة")
                       val intervalsValues = longArrayOf(1L, 3L, 6L, 12L, 24L)
 
-                      val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, intervalsLabels)
-                      spinnerInterval.adapter = adapter
-
+                      spinnerInterval.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, intervalsLabels)
                       val savedHours = HadithRepository.getIntervalHours(this)
-                      val initialIndex = intervalsValues.indexOf(savedHours).takeIf { it >= 0 } ?: 2
-                      spinnerInterval.setSelection(initialIndex)
+                      spinnerInterval.setSelection(intervalsValues.indexOf(savedHours).takeIf { it >= 0 } ?: 2)
 
                       spinnerInterval.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                           override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -1029,7 +1123,7 @@ jobs:
 
                   private fun displayHadith(item: HadithItem) {
                       tvMatn.text = item.matn
-                      tvMeta.text = "الراوي: " + item.rawi + "  |  المحدث: " + item.muhaddith + "\nالمصدر: " + item.source + "  •  الحكم: " + item.grade
+                      tvMeta.text = "الراوي: " + item.rawi + "  |  المحدث: " + item.muhaddith + "\nالمصدر: " + item.source + "  •  خلاصة الحكم: " + item.grade
                       tvSharh.text = item.sharh
                   }
 
@@ -1057,10 +1151,12 @@ jobs:
           gradle-version: '8.4'
 
       - name: Build Debug APK
-        run: gradle assembleDebug --no-build-cache --rerun-tasks
+        run: |
+          gradle assembleDebug --no-build-cache --rerun-tasks
+          cp app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/Dorar_Studio_V5.apk
 
       - name: Upload Ready APK
         uses: actions/upload-artifact@v4
         with:
-          name: Dorar-Pro-V3-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: Dorar-Studio-V5-Package
+          path: app/build/outputs/apk/debug/Dorar_Studio_V5.apk
